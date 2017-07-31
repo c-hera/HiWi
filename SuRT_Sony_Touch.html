@@ -21,7 +21,7 @@
             <br>
             <br> Versuchsperson-Nummer:
             <br>
-            <input type="text" style="text-align:center;" name="VPN" value="01">
+            <input id="vpnNumber" type="text" style="text-align:center;" name="VPN">
             <br>
             <br>
 
@@ -97,6 +97,7 @@
         <button id="leftside2" onmousedown="NextGame();setTimeout(ReduceScore1,10000);setTimeout(ReduceScore2,20000);"></button>
         <button id="stopStart" style="text-align:center;" onclick="interruptGame()">||</button>
         <div id="countdownTimer" style="text-align:center;"></div>
+        <div id="synchroniser"></div>
         <button id="rightside1" ontouchmove="turnrightsidegrey()"></button>
 
         <div id="rightside2" onmousedown="NextGame();setTimeout(ReduceScore1,10000);setTimeout(ReduceScore2,20000);"></div>
