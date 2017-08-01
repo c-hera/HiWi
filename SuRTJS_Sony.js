@@ -137,7 +137,57 @@ function interruptGame() {
         testSubjectResult.resultsScore = subjectScoreNew;
         testSubjectResult.resultsTimeProgression = subjectTimeNew;
 
+        //arrange data, so it is displayed correctly in the txt file
+        var all = "";
+        var row_width = 2;
+        all += "number" + new Array(row_width).join('\t\t');
+        all += "\n";
+        all += "time" + new Array(row_width).join('\t\t');
+        all += "\n";
+        all += "timeToScore" + new Array(row_width).join('\t');
+        all += "\n";
+        all += "choice" + new Array(row_width).join('\t\t');
+        all += "\n";
+        all += "score" + new Array(row_width).join('\t\t');
+        all += "\n";
+        all += "interruption" + new Array(row_width).join('\t');
+        all += "\n";
+        all += experimentDate + new Array(row_width).join('\t');
+        all += "\n";
+        all += testSubjectResult.vpn + new Array(row_width).join('\t');
+        all += "\r\n";
+        for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
+            all += (i + 1) + new Array(row_width).join('\t\t');
+            all += "\n";
+            all += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join('\t\t');
+            all += "\n";
+            all += testSubjectResult.resultsTime[i] + new Array(row_width).join('\t\t');
+            all += "\n";
+            all += testSubjectResult.resultsChoice[i] + new Array(row_width).join('\t\t');
+            all += "\n";
+            all += testSubjectResult.resultsScore[i] + new Array(row_width).join('\t\t');
+            //content += myarray[i + 1];
+            all += "\n";
+            if (typeof testSubjectResult.interrupt[i] != 'undefined') {
+                all += testSubjectResult.interrupt[i] + new Array(row_width).join('\t');
+            }
+            all += "\r\n";
 
+        }
+
+        var allData = new Blob([all /*combinedResults.timeToScore, combinedResults.choice*/ ], {
+            type: "text/plain;charset=utf-8"
+        });
+
+        //use saveAs to save data to txt/xls file
+        var number = testSubjectResult.vpn.toString();
+        saveAs(allData, "VPN" + number + "_results.txt")
+
+
+
+        //UNCOMMENT HERE, IF DATA SHOULD BE STORED IN XLS FILE
+
+        /*
         //fill object "combineResults" with values
         var row_width = 2;
         combinedResults.timeToScore = ["time"];
@@ -189,7 +239,7 @@ function interruptGame() {
 
         //use saveAs to save data to txt/xls file
         var number = testSubjectResult.vpn.toString();
-        saveAs(allData, "VPN" + number + "_results.xls");
+        saveAs(allData, "VPN" + number + "_results.xls");*/
 
 
     }
@@ -777,7 +827,7 @@ function GetRightPosition() {
     while (i < (2 * anzahl + 2)) {
 
         //Bestimmen der Position
-        positions[i] = Math.random() * 47;
+        positions[i] = Math.random() * 45;
         positions[i + 1] = Math.random() * 95;
 
 
