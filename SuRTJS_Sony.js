@@ -56,6 +56,7 @@ var testSubjectResult = {
     resultsTime: [],
     resultsScore: [],
     resultsTimeProgression: [],
+    resultsScoretimeExact: [],
     //interrupt defines start and end of game sequence, confines the results
     interrupt: []
 };
@@ -68,6 +69,7 @@ var subjectScoretime = [];
 var subjectChoice = [];
 var subjectScore = [];
 var subjectTime = [];
+var subjectScoretimeExact = [];
 
 //defines, how many interruptions will happen during experiment. During last interruption, 
 //javascript will save the data, therefore a value of 3 means 2 interruptions within the
@@ -84,6 +86,13 @@ var startNextGame = 0;
 var experimentStart = 0;
 //get the Date and Time info, when experiment starts (user presses ok button)
 var experimentDate = 0;
+
+//get exact time the round started
+var roundStartTime = 0;
+//get exact duration of round
+var scoretimeExact = 0;
+//get exact duration of game vs. start of game
+var timeExact = 0;
 
 //object which contains all values which will be saved externally to txt or xls file in function interrupt
 var combinedResults = {
@@ -129,6 +138,7 @@ function interruptGame() {
         var subjectScoretimeNew = subjectScoretime.slice(1, subjectScore.length + 1);
         var subjectScoreNew = subjectScore.slice(1, subjectScore.length + 1);
         var subjectTimeNew = subjectTime.slice(1, subjectTime.length + 1);
+        subjectScoretimeExact = subjectScoretimeExact.slice(1, subjectScoretimeExact.length + 1);
 
         //move results of choice, scoretime, score, time since start of SuRT to the testSubjectResult object
         //relic, this step is not really necessary anymore
@@ -136,13 +146,16 @@ function interruptGame() {
         testSubjectResult.resultsTime = subjectScoretimeNew;
         testSubjectResult.resultsScore = subjectScoreNew;
         testSubjectResult.resultsTimeProgression = subjectTimeNew;
+        testSubjectResult.resultsScoretimeExact = subjectScoretimeExact;
 
-        //arrange data, so it is displayed correctly in the txt file
+        //arrange data, so it is displayed correctly in the txt filew
         var all = "";
         var row_width = 2;
         all += "number" + new Array(row_width).join('\t\t');
         all += "\n";
         all += "time" + new Array(row_width).join('\t\t');
+        all += "\n";
+        all += "ScoretimeExact" + new Array(row_width).join('\t');
         all += "\n";
         all += "timeToScore" + new Array(row_width).join('\t');
         all += "\n";
@@ -160,6 +173,8 @@ function interruptGame() {
             all += (i + 1) + new Array(row_width).join('\t\t');
             all += "\n";
             all += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join('\t\t');
+            all += "\n";
+            all += testSubjectResult.resultsScoretimeExact[i] + new Array(row_width).join('\t\t');
             all += "\n";
             all += testSubjectResult.resultsTime[i] + new Array(row_width).join('\t\t');
             all += "\n";
@@ -319,6 +334,7 @@ function GoOn() {
         //starttime in Sekunden
         var date = new Date();
         starttime = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+        roundStartTime = Date.now();
         //
         /*
 	reducesoretwo = false;
@@ -335,7 +351,7 @@ function GoOn() {
         //Merke Startzeit
         var date = new Date();
         roundstart = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-
+        roundStartTime = Date.now();
         //Bestimme Schwierigkeitsgrad
         schwierigkeit = 0;
         /*
@@ -429,8 +445,11 @@ function Score() {
     Choice();
     var date = new Date();
     endtime = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+    var now = new Date().getTime();
     scoretime = endtime - starttime;
-    console.log(scoretime);
+    scoretimeExact = (now - roundStartTime) / 1000;
+    timeExact = (now - experimentStart) / 1000;
+
     //Handicap
     if (scoretime < 9 && choice == 1) {
         if (scoretime <= 1) {
@@ -1617,22 +1636,22 @@ function NextGame() {
         ShowScore();
         game = 1;
         counterToInterruption++;
-        var now = new Date().getTime();
+
         subjectScoretime[counterToInterruption] = scoretime;
         subjectChoice[counterToInterruption] = choice;
         subjectScore[counterToInterruption] = score;
-        subjectTime[counterToInterruption] = (now - experimentStart) / 1000;
-
+        subjectTime[counterToInterruption] = timeExact;
+        subjectScoretimeExact[counterToInterruption] = scoretimeExact;
         console.log(subjectTime);
     } else {
         weiter = true;
         game++;
         counterToInterruption++;
-        var now = new Date().getTime();
         subjectScoretime[counterToInterruption] = scoretime;
         subjectChoice[counterToInterruption] = choice;
         subjectScore[counterToInterruption] = score;
-        subjectTime[counterToInterruption] = (now - experimentStart) / 1000;
+        subjectTime[counterToInterruption] = timeExact;
+        subjectScoretimeExact[counterToInterruption] = scoretimeExact;
         console.log(subjectTime);
         GoOn();
         //gameplayed = true;
