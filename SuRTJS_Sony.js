@@ -16,6 +16,7 @@ var endtime = 0;
 var wahl = 'richtige';
 var rightchoice = 0;
 var scoreheight = 0;
+var scoreheightOld = 0;
 var handicap = 0;
 //positions
 var anzahl = 25;
@@ -403,33 +404,23 @@ function Score() {
     if (scoretime < 9 && choice == 1) {
         if (scoretime <= 1) {
             handicap = -1;
-            mistakecounter = 0;
+            score += handicap;
+            rightchoice += choice;
+            lastscore[game] = handicap;
         }
         else {
             handicap = Math.round(scoretime) - 1;
-            mistakecounter = 0;
+            score += handicap;
+            rightchoice += choice;
+            lastscore[game] = handicap;
         }
     }
     else {
         handicap = 6;
-        /*
-                if (mistakecounter == 0) {
-                    handicap = 3;
-                    mistakecounter = 1;
-                }
-                else if (mistakecounter == 1) {
-                    handicap = 5;
-                    mistakecounter = 2;
-                }
-                else if (mistakecounter == 2) {
-                    handicap = 7;
-                
-    }*/
+        score += handicap;
+        rightchoice += choice;
+        lastscore[game] = handicap;
     }
-    console.log(handicap);
-    score += handicap;
-    rightchoice += choice;
-    lastscore[game] = handicap;
     var k = 0;
     var t = 0;
     for (k = game; k > game - 3; k--) {
@@ -438,16 +429,27 @@ function Score() {
             t++;
         }
     }
-    console.log(lastfivescore)
-        //berechne hoehe des Score
+    //berechne hoehe des Score
+    /*as the movement of the scale is not intuitively understandable by the test subject, the following measures were implemented:
+     - if selection is wrong, the new scoreheight will be the scoreheight of the last game - 10
+     - if scoreheight is smaller than 10, scoreheight is 0
+     - if selection is correct again after a false selection and the new scoreheight is lower than the calculated scoreheight (-10...) 
+        scoreheight shall be as high as the scoreheight of the last game, if issue continues and calculated scoreheight is still lower
+        scoreheightOld is added +5 and set as scoreheight, this continues until the calculated scoreheight is higher than the scoreheightOld again*/
     if (handicap == 6 && scoreheight >= 10) {
         scoreheight = scoreheight - 10;
+        scoreheightOld = scoreheight;
     }
     else if (handicap == 6 && scoreheight <= 10) {
         scoreheight = 0;
+        scoreheightOld = scoreheight;
     }
     else {
         scoreheight = 80 - ((lastfivescore / t) + 1) * 10;
+        if (scoreheight <= scoreheightOld) {
+            scoreheight = scoreheightOld;
+            scoreheightOld += 5;
+        }
     }
     //Setze Hoehe des Scorebalkens
     var d = document.getElementById('gruenerBalken2');
@@ -1363,7 +1365,6 @@ function NextGame() {
         subjectScore[counterToInterruption] = score;
         subjectTime[counterToInterruption] = timeExact;
         subjectScoretimeExact[counterToInterruption] = scoretimeExact;
-        console.log(subjectTime);
     }
     else {
         weiter = true;
@@ -1374,7 +1375,6 @@ function NextGame() {
         subjectScore[counterToInterruption] = score;
         subjectTime[counterToInterruption] = timeExact;
         subjectScoretimeExact[counterToInterruption] = scoretimeExact;
-        console.log(subjectTime);
         GoOn();
         //gameplayed = true;
     }
