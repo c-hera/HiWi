@@ -409,7 +409,9 @@ function Score() {
             lastscore[game] = handicap;
         }
         else {
-            handicap = Math.round(scoretime) - 1;
+            //ATTENTION: Handicap calculation now has 2 as divisor. Therefore the effect oftime lag during selection is not as significant as before
+            //BUT: Worst Case: (8-1)/2 = 3.5 -> Therefore, a gap exisits between worst handicap (correct selection) and handicap (incorrect selection)
+            handicap = (Math.round(scoretime) - 1) / 2;
             score += handicap;
             rightchoice += choice;
             lastscore[game] = handicap;
