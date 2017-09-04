@@ -155,8 +155,15 @@ function interruptGame() {
         for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
             all += (i + 1) + new Array(row_width).join('\t\t');
             all += "\n";
-            all += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join('\t\t');
-            all += "\n";
+            var testForLength = testSubjectResult.resultsTimeProgression[i].toString().length;
+            if (testForLength < 8) {
+                all += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join('\t\t');
+                all += "\n";
+            }
+            else {
+                all += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join('\t');
+                all += "\n";
+            }
             all += testSubjectResult.resultsScoretimeExact[i] + new Array(row_width).join('\t\t');
             all += "\n";
             all += testSubjectResult.resultsTime[i] + new Array(row_width).join('\t\t');
@@ -177,60 +184,61 @@ function interruptGame() {
         //use saveAs to save data to txt/xls file
         var number = testSubjectResult.vpn.toString();
         saveAs(allData, "VPN" + number + "_results.txt")
-            //UNCOMMENT HERE, IF DATA SHOULD BE STORED IN XLS FILE
-            /*
-            //fill object "combineResults" with values
-            var row_width = 2;
-            combinedResults.timeToScore = ["time"];
+        document.getElementById("countdownTimer").innerHTML = "End of game. Please stow away the tablet.";
+        //UNCOMMENT HERE, IF DATA SHOULD BE STORED IN XLS FILE
+        /*
+        //fill object "combineResults" with values
+        var row_width = 2;
+        combinedResults.timeToScore = ["time"];
+        combinedResults.timeToScore += "\n";
+        for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
+            //add spacing between numbers
+            combinedResults.timeToScore += testSubjectResult.resultsTime[i] + new Array(row_width).join(" ");
             combinedResults.timeToScore += "\n";
-            for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
-                //add spacing between numbers
-                combinedResults.timeToScore += testSubjectResult.resultsTime[i] + new Array(row_width).join(" ");
-                combinedResults.timeToScore += "\n";
-            };
+        };
 
-            combinedResults.choice += ["choice"];
+        combinedResults.choice += ["choice"];
+        combinedResults.choice += "\n";
+        for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
+            combinedResults.choice += testSubjectResult.resultsChoice[i] + new Array(row_width).join(" ");
             combinedResults.choice += "\n";
-            for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
-                combinedResults.choice += testSubjectResult.resultsChoice[i] + new Array(row_width).join(" ");
-                combinedResults.choice += "\n";
-            };
+        };
 
-            combinedResults.score += ["score"];
+        combinedResults.score += ["score"];
+        combinedResults.score += "\n";
+        for (var i = 0; i < testSubjectResult.resultsChoice.length; i++) {
+            combinedResults.score += testSubjectResult.resultsScore[i] + new Array(row_width).join(" ");
             combinedResults.score += "\n";
-            for (var i = 0; i < testSubjectResult.resultsChoice.length; i++) {
-                combinedResults.score += testSubjectResult.resultsScore[i] + new Array(row_width).join(" ");
-                combinedResults.score += "\n";
-            };
+        };
 
-            combinedResults.timeProgression += ["time_progression"];
+        combinedResults.timeProgression += ["time_progression"];
+        combinedResults.timeProgression += "\n";
+        for (var i = 0; i < testSubjectResult.resultsTimeProgression.length; i++) {
+            combinedResults.timeProgression += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join(" ");
             combinedResults.timeProgression += "\n";
-            for (var i = 0; i < testSubjectResult.resultsTimeProgression.length; i++) {
-                combinedResults.timeProgression += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join(" ");
-                combinedResults.timeProgression += "\n";
-            };
+        };
 
-            combinedResults.interruptions += ["Interruptions (Row Information)"];
+        combinedResults.interruptions += ["Interruptions (Row Information)"];
+        combinedResults.interruptions += "\n";
+        for (var i = 0; i < testSubjectResult.interrupt.length; i++) {
+            combinedResults.interruptions += testSubjectResult.interrupt[i] + new Array(row_width).join(" ");
             combinedResults.interruptions += "\n";
-            for (var i = 0; i < testSubjectResult.interrupt.length; i++) {
-                combinedResults.interruptions += testSubjectResult.interrupt[i] + new Array(row_width).join(" ");
-                combinedResults.interruptions += "\n";
-            };
+        };
 
-            combinedResults.experimentStart += ["Experiment_Starttime"];
-            combinedResults.experimentStart += "\n";
-            combinedResults.experimentStart += experimentDate;
-            combinedResults.experimentStart += "\n";
+        combinedResults.experimentStart += ["Experiment_Starttime"];
+        combinedResults.experimentStart += "\n";
+        combinedResults.experimentStart += experimentDate;
+        combinedResults.experimentStart += "\n";
 
-            //save Data via "saveAs", unfortunately, values can only be stored in one column (if saved to excel)
+        //save Data via "saveAs", unfortunately, values can only be stored in one column (if saved to excel)
 
-            var allData = new Blob([combinedResults.experimentStart, combinedResults.timeProgression, combinedResults.timeToScore, combinedResults.score, combinedResults.choice, combinedResults.interruptions], {
-                type: "text/plain;charset=utf-8"
-            });
+        var allData = new Blob([combinedResults.experimentStart, combinedResults.timeProgression, combinedResults.timeToScore, combinedResults.score, combinedResults.choice, combinedResults.interruptions], {
+            type: "text/plain;charset=utf-8"
+        });
 
-            //use saveAs to save data to txt/xls file
-            var number = testSubjectResult.vpn.toString();
-            saveAs(allData, "VPN" + number + "_results.xls");*/
+        //use saveAs to save data to txt/xls file
+        var number = testSubjectResult.vpn.toString();
+        saveAs(allData, "VPN" + number + "_results.xls");*/
     }
 };
 
@@ -1367,6 +1375,7 @@ function NextGame() {
         subjectScore[counterToInterruption] = score;
         subjectTime[counterToInterruption] = timeExact;
         subjectScoretimeExact[counterToInterruption] = scoretimeExact;
+        console.log(subjectTime);
     }
     else {
         weiter = true;
@@ -1377,6 +1386,7 @@ function NextGame() {
         subjectScore[counterToInterruption] = score;
         subjectTime[counterToInterruption] = timeExact;
         subjectScoretimeExact[counterToInterruption] = scoretimeExact;
+        console.log(subjectTime);
         GoOn();
         //gameplayed = true;
     }
