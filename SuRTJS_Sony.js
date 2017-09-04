@@ -85,14 +85,15 @@ var scoretimeExact = 0;
 var timeExact = 0;
 //object which contains all values which will be saved externally to txt or xls file in function interrupt
 var combinedResults = {
-        experimentStart: []
-        , timeProgression: []
-        , timeToScore: []
-        , score: []
-        , choice: []
-        , interruptions: []
-    , }
-    //interrupts game and shows countdown, countdown length can be set in function displayCountdown,
+    experimentStart: []
+    , timeProgression: []
+    , timeToScore: []
+    , score: []
+    , choice: []
+    , interruptions: []
+, }
+var mistakecounter = 0;
+//interrupts game and shows countdown, countdown length can be set in function displayCountdown,
 function interruptGame() {
     //show timer
     document.getElementById("countdownTimer").style.display = 'block';
@@ -402,13 +403,28 @@ function Score() {
     if (scoretime < 9 && choice == 1) {
         if (scoretime <= 1) {
             handicap = -1;
+            mistakecounter = 0;
         }
         else {
             handicap = Math.round(scoretime) - 1;
+            mistakecounter = 0;
         }
     }
     else {
-        handicap = 3;
+        handicap = 6;
+        /*
+                if (mistakecounter == 0) {
+                    handicap = 3;
+                    mistakecounter = 1;
+                }
+                else if (mistakecounter == 1) {
+                    handicap = 5;
+                    mistakecounter = 2;
+                }
+                else if (mistakecounter == 2) {
+                    handicap = 7;
+                
+    }*/
     }
     console.log(handicap);
     score += handicap;
@@ -422,8 +438,17 @@ function Score() {
             t++;
         }
     }
-    //berechne hoehe des Score
-    scoreheight = 80 - ((lastfivescore / t) + 1) * 10;
+    console.log(lastfivescore)
+        //berechne hoehe des Score
+    if (handicap == 6 && scoreheight >= 10) {
+        scoreheight = scoreheight - 10;
+    }
+    else if (handicap == 6 && scoreheight <= 10) {
+        scoreheight = 0;
+    }
+    else {
+        scoreheight = 80 - ((lastfivescore / t) + 1) * 10;
+    }
     //Setze Hoehe des Scorebalkens
     var d = document.getElementById('gruenerBalken2');
     d.style.height = scoreheight + '%';
