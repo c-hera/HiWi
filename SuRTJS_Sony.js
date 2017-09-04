@@ -1326,7 +1326,7 @@ function ShowScore() {
     var rightchoicepercent = 100 * rightchoice / game;
     var scorehandicap = Math.round(score / game);
     rightchoicepercent = Math.round(rightchoicepercent);
-    document.getElementById('scoreanzeige').innerHTML = "<br><br><br><br><br><br><br><br>You chose " + rightchoicepercent + "% the right side. <br> Handicap: " + scorehandicap;
+    document.getElementById('scoreanzeige').innerHTML = "<br><br><br><br><br><br><br><br>" + rightchoicepercent + "% of the time, you chose correctly. <br> Handicap: " + scorehandicap;
     score = 0;
     newround = 1;
     weiter = true;
