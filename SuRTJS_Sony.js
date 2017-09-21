@@ -50,12 +50,12 @@ var reducesorethree = false;
 var reducesorefour = false;
 //object and variables used to provide data for saving VPN performance
 var testSubjectResult = {
-    vpn: '00'
-    , resultsChoice: []
-    , resultsTime: []
-    , resultsScore: []
-    , resultsTimeProgression: []
-    , resultsScoretimeExact: [], //interrupt defines start and end of game sequence, confines the results
+    vpn: '00',
+    resultsChoice: [],
+    resultsTime: [],
+    resultsScore: [],
+    resultsTimeProgression: [],
+    resultsScoretimeExact: [], //interrupt defines start and end of game sequence, confines the results
     interrupt: []
 };
 //counts games, is used to find out, how many games have been played since last interruption/game start
@@ -86,13 +86,13 @@ var scoretimeExact = 0;
 var timeExact = 0;
 //object which contains all values which will be saved externally to txt or xls file in function interrupt
 var combinedResults = {
-    experimentStart: []
-    , timeProgression: []
-    , timeToScore: []
-    , score: []
-    , choice: []
-    , interruptions: []
-, }
+    experimentStart: [],
+    timeProgression: [],
+    timeToScore: [],
+    score: [],
+    choice: [],
+    interruptions: [],
+}
 var mistakecounter = 0;
 //interrupts game and shows countdown, countdown length can be set in function displayCountdown,
 var countDownDate = 0;
@@ -122,8 +122,7 @@ function interruptGame() {
         if (testSubjectResult.interrupt == 0) {
             testSubjectResult.interrupt[0] = 1;
             testSubjectResult.interrupt[1] = counterToInterruption;
-        }
-        else {
+        } else {
             //if it is the second, etc. time that values as stored in interrupt
             var lastInterruptValue = testSubjectResult.interrupt[testSubjectResult.interrupt.length - 1];
             testSubjectResult.interrupt.push(lastInterruptValue + 1);
@@ -134,8 +133,7 @@ function interruptGame() {
     //check if all iterations have been played by the user (defined by interruptions within the experiment design)
     if (iterationsBeforeEnd < endOfExperiment) {
         displayCountdown();
-    }
-    else {
+    } else {
         //get rid of the undefined x 1 entry at position 0 in arrays
         clearInterval(x);
         var subjectChoiceNew = subjectChoice.slice(1, subjectChoice.length + 1);
@@ -178,8 +176,7 @@ function interruptGame() {
             if (testForLength < 8) {
                 all += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join('\t\t');
                 all += "\n";
-            }
-            else {
+            } else {
                 all += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join('\t');
                 all += "\n";
             }
@@ -282,9 +279,10 @@ function displayCountdown(firstIteration) {
             if (firstIteration == 1) {
                 firstIteration = 0;
                 interruptGame(1);
-            }
-            else {
+            } else {
                 game--;
+                //startNextGame = 1;
+                //NextGame();
                 ShowScore();
             }
             //game counter needs to be reduced, as last game was not played if interruption has been selected by the user
@@ -294,11 +292,9 @@ function displayCountdown(firstIteration) {
         // Display the result in the element with id="demo"
         if (firstIteration == 1) {
             document.getElementById("waitForCountdown").innerHTML = minutes + "m " + seconds + "s until game will be interrupted permanently.";
-        }
-        else if (endOfExperiment == iterationsBeforeEnd) {
+        } else if (endOfExperiment == iterationsBeforeEnd) {
             document.getElementById("countdownTimer").innerHTML = "<br><br><br><br><br><br><br><br>End of game.Please stow away the tablet.";
-        }
-        else {
+        } else {
             document.getElementById("countdownTimer").innerHTML = "<br><br><br><br><br><br><br><br>" + minutes + "m " + seconds + "s until game starts again.";
         }
         // If the count down is finished, write some text
@@ -424,8 +420,7 @@ function Choice() {
     if ((Seite == 0 && leftside) || (Seite == 1 && rightside)) {
         choice = 1;
         wahl = 'Richtige';
-    }
-    else {
+    } else {
         choice = 0;
         wahl = 'Falsche';
     }
@@ -453,8 +448,7 @@ function Score() {
             score += handicap;
             rightchoice += choice;
             lastscore[game] = handicap;
-        }
-        else {
+        } else {
             //ATTENTION: Handicap calculation now has 2 as divisor. Therefore the effect oftime lag during selection is not as significant as before
             //BUT: Worst Case: (8-1)/2 = 3.5 -> Therefore, a gap exisits between worst handicap (correct selection) and handicap (incorrect selection)
             handicap = (Math.round(scoretime) - 1) / 2;
@@ -462,8 +456,7 @@ function Score() {
             rightchoice += choice;
             lastscore[game] = handicap;
         }
-    }
-    else {
+    } else {
         handicap = 6;
         score += handicap;
         rightchoice += choice;
@@ -487,14 +480,12 @@ function Score() {
     if (handicap == 6 && scoreheight >= 10) {
         scoreheight = scoreheight - 10;
         scoreheightOld = scoreheight;
-    }
-    else if (handicap == 6 && scoreheight <= 10) {
+    } else if (handicap == 6 && scoreheight <= 10) {
         scoreheight = 0;
         scoreheightOld = scoreheight;
-    }
-    else {
+    } else {
         scoreheight = 80 - ((lastfivescore / t) + 1) * 10;
-        if (scoreheight <= scoreheightOld) {
+        if (scoreheight <= scoreheightOld && scoreheight < 80) {
             scoreheight = scoreheightOld;
             scoreheightOld += 5;
         }
@@ -786,8 +777,7 @@ function GetLeftPosition() {
         positions[i + 1] = Math.random() * 95;
         //Pruefen, ob Position zulaessig
         for (j = 0; j < i; j += 2) {
-            if ((Math.sqrt(Math.pow((positions[i] - positions[j]), 2) + Math.pow((positions[i + 1] - positions[j + 1]), 2))) > (5)) {}
-            else {
+            if ((Math.sqrt(Math.pow((positions[i] - positions[j]), 2) + Math.pow((positions[i + 1] - positions[j + 1]), 2))) > (5)) {} else {
                 i -= 2;
                 break;
             }
@@ -806,8 +796,7 @@ function GetRightPosition() {
         positions[i + 1] = Math.random() * 95;
         //Pruefen, ob Position zulaessig
         for (j = 0; j < i; j += 2) {
-            if ((Math.sqrt(Math.pow((positions[i] - positions[j]), 2) + Math.pow((positions[i + 1] - positions[j + 1]), 2))) > (5)) {}
-            else {
+            if ((Math.sqrt(Math.pow((positions[i] - positions[j]), 2) + Math.pow((positions[i + 1] - positions[j + 1]), 2))) > (5)) {} else {
                 i -= 2;
                 break;
             }
@@ -828,8 +817,7 @@ function Target() {
         //Target auf linker Seite wird aktiviert (Sichtbarkeit=1)
         var d = document.getElementById('LTarget');
         d.style.opacity = 1;
-    }
-    else {
+    } else {
         //Rechte Seite ist aktiv
         //Target auf linker Seite wird deaktiviert (Sichtbarkeit=0)
         var d = document.getElementById('LTarget');
@@ -862,8 +850,7 @@ function EndInput() {
         SetSizeTarget();
         weiter = true;
         ShowGoOnButton();
-    }
-    else {
+    } else {
         alert("Please enter VPN before proceeding!");
         location.reload();
     }
@@ -1374,6 +1361,8 @@ function ShowScore() {
     d.style.zIndex = 1;
     var d = document.getElementById('scoreanzeige');
     d.style.zIndex = 30;
+    console.log(rightchoice);
+    console.log(game);
     var rightchoicepercent = 100 * rightchoice / game;
     var scorehandicap = Math.round(score / game);
     rightchoicepercent = Math.round(rightchoicepercent);
@@ -1383,6 +1372,7 @@ function ShowScore() {
         rightchoicepercent = 100;
     }
     document.getElementById('scoreanzeige').innerHTML = "<br><br><br><br><br><br><br><br>" + rightchoicepercent + "% of the time, you chose correctly. <br> Handicap: " + scorehandicap;
+    game = 1;
     score = 0;
     newround = 1;
     weiter = true;
@@ -1419,9 +1409,8 @@ function NextGame() {
         subjectScore[counterToInterruption] = score;
         subjectTime[counterToInterruption] = timeExact;
         subjectScoretimeExact[counterToInterruption] = scoretimeExact;
-        console.log(subjectTime);
-    }
-    else {
+
+    } else {
         weiter = true;
         game++;
         counterToInterruption++;
@@ -1430,7 +1419,6 @@ function NextGame() {
         subjectScore[counterToInterruption] = score;
         subjectTime[counterToInterruption] = timeExact;
         subjectScoretimeExact[counterToInterruption] = scoretimeExact;
-        console.log(subjectTime);
         GoOn();
         //gameplayed = true;
     }
@@ -1540,130 +1528,115 @@ var saveAs = saveAs || (function (view) {
     }
     var doc = view.document
         // only get URL when necessary in case Blob.js hasn't overridden it yet
-        
-        , get_URL = function () {
+
+    , get_URL = function () {
             return view.URL || view.webkitURL || view;
-        }
-        , save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a")
-        , can_use_save_link = "download" in save_link
-        , click = function (node) {
+        }, save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a"), can_use_save_link = "download" in save_link, click = function (node) {
             var event = new MouseEvent("click");
             node.dispatchEvent(event);
-        }
-        , is_safari = /constructor/i.test(view.HTMLElement) || view.safari
-        , is_chrome_ios = /CriOS\/[\d]+/.test(navigator.userAgent)
-        , throw_outside = function (ex) {
+        }, is_safari = /constructor/i.test(view.HTMLElement) || view.safari, is_chrome_ios = /CriOS\/[\d]+/.test(navigator.userAgent), throw_outside = function (ex) {
             (view.setImmediate || view.setTimeout)(function () {
                 throw ex;
             }, 0);
-        }
-        , force_saveable_type = "application/octet-stream"
+        }, force_saveable_type = "application/octet-stream"
         // the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
-        
-        , arbitrary_revoke_timeout = 1000 * 40 // in ms
-        
-        , revoke = function (file) {
-            var revoker = function () {
-                if (typeof file === "string") { // file is an object URL
-                    get_URL().revokeObjectURL(file);
-                }
-                else { // file is a File
-                    file.remove();
-                }
-            };
-            setTimeout(revoker, arbitrary_revoke_timeout);
-        }
-        , dispatch = function (filesaver, event_types, event) {
-            event_types = [].concat(event_types);
-            var i = event_types.length;
-            while (i--) {
-                var listener = filesaver["on" + event_types[i]];
-                if (typeof listener === "function") {
-                    try {
-                        listener.call(filesaver, event || filesaver);
-                    }
-                    catch (ex) {
-                        throw_outside(ex);
-                    }
+
+    , arbitrary_revoke_timeout = 1000 * 40 // in ms
+
+    , revoke = function (file) {
+        var revoker = function () {
+            if (typeof file === "string") { // file is an object URL
+                get_URL().revokeObjectURL(file);
+            } else { // file is a File
+                file.remove();
+            }
+        };
+        setTimeout(revoker, arbitrary_revoke_timeout);
+    }, dispatch = function (filesaver, event_types, event) {
+        event_types = [].concat(event_types);
+        var i = event_types.length;
+        while (i--) {
+            var listener = filesaver["on" + event_types[i]];
+            if (typeof listener === "function") {
+                try {
+                    listener.call(filesaver, event || filesaver);
+                } catch (ex) {
+                    throw_outside(ex);
                 }
             }
         }
-        , auto_bom = function (blob) {
-            // prepend BOM for UTF-8 XML and text/* types (including HTML)
-            // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
-            if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
-                return new Blob([String.fromCharCode(0xFEFF), blob], {
-                    type: blob.type
-                });
-            }
-            return blob;
+    }, auto_bom = function (blob) {
+        // prepend BOM for UTF-8 XML and text/* types (including HTML)
+        // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
+        if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
+            return new Blob([String.fromCharCode(0xFEFF), blob], {
+                type: blob.type
+            });
         }
-        , FileSaver = function (blob, name, no_auto_bom) {
-            if (!no_auto_bom) {
-                blob = auto_bom(blob);
+        return blob;
+    }, FileSaver = function (blob, name, no_auto_bom) {
+        if (!no_auto_bom) {
+            blob = auto_bom(blob);
+        }
+        // First try a.download, then web filesystem, then object URLs
+        var filesaver = this,
+            type = blob.type,
+            force = type === force_saveable_type,
+            object_url, dispatch_all = function () {
+                dispatch(filesaver, "writestart progress write writeend".split(" "));
             }
-            // First try a.download, then web filesystem, then object URLs
-            var filesaver = this
-                , type = blob.type
-                , force = type === force_saveable_type
-                , object_url, dispatch_all = function () {
-                    dispatch(filesaver, "writestart progress write writeend".split(" "));
-                }
-                // on any filesys errors revert to saving with object URLs
-                
-                , fs_error = function () {
-                    if ((is_chrome_ios || (force && is_safari)) && view.FileReader) {
-                        // Safari doesn't allow downloading of blob urls
-                        var reader = new FileReader();
-                        reader.onloadend = function () {
-                            var url = is_chrome_ios ? reader.result : reader.result.replace(/^data:[^;]*;/, 'data:attachment/file;');
-                            var popup = view.open(url, '_blank');
-                            if (!popup) view.location.href = url;
-                            url = undefined; // release reference before dispatching
-                            filesaver.readyState = filesaver.DONE;
-                            dispatch_all();
-                        };
-                        reader.readAsDataURL(blob);
-                        filesaver.readyState = filesaver.INIT;
-                        return;
-                    }
-                    // don't create more object URLs than needed
-                    if (!object_url) {
-                        object_url = get_URL().createObjectURL(blob);
-                    }
-                    if (force) {
-                        view.location.href = object_url;
-                    }
-                    else {
-                        var opened = view.open(object_url, "_blank");
-                        if (!opened) {
-                            // Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
-                            view.location.href = object_url;
-                        }
-                    }
+            // on any filesys errors revert to saving with object URLs
+
+        , fs_error = function () {
+            if ((is_chrome_ios || (force && is_safari)) && view.FileReader) {
+                // Safari doesn't allow downloading of blob urls
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    var url = is_chrome_ios ? reader.result : reader.result.replace(/^data:[^;]*;/, 'data:attachment/file;');
+                    var popup = view.open(url, '_blank');
+                    if (!popup) view.location.href = url;
+                    url = undefined; // release reference before dispatching
                     filesaver.readyState = filesaver.DONE;
                     dispatch_all();
-                    revoke(object_url);
                 };
-            filesaver.readyState = filesaver.INIT;
-            if (can_use_save_link) {
-                object_url = get_URL().createObjectURL(blob);
-                setTimeout(function () {
-                    save_link.href = object_url;
-                    save_link.download = name;
-                    click(save_link);
-                    dispatch_all();
-                    revoke(object_url);
-                    filesaver.readyState = filesaver.DONE;
-                });
+                reader.readAsDataURL(blob);
+                filesaver.readyState = filesaver.INIT;
                 return;
             }
-            fs_error();
-        }
-        , FS_proto = FileSaver.prototype
-        , saveAs = function (blob, name, no_auto_bom) {
-            return new FileSaver(blob, name || blob.name || "download", no_auto_bom);
+            // don't create more object URLs than needed
+            if (!object_url) {
+                object_url = get_URL().createObjectURL(blob);
+            }
+            if (force) {
+                view.location.href = object_url;
+            } else {
+                var opened = view.open(object_url, "_blank");
+                if (!opened) {
+                    // Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
+                    view.location.href = object_url;
+                }
+            }
+            filesaver.readyState = filesaver.DONE;
+            dispatch_all();
+            revoke(object_url);
         };
+        filesaver.readyState = filesaver.INIT;
+        if (can_use_save_link) {
+            object_url = get_URL().createObjectURL(blob);
+            setTimeout(function () {
+                save_link.href = object_url;
+                save_link.download = name;
+                click(save_link);
+                dispatch_all();
+                revoke(object_url);
+                filesaver.readyState = filesaver.DONE;
+            });
+            return;
+        }
+        fs_error();
+    }, FS_proto = FileSaver.prototype, saveAs = function (blob, name, no_auto_bom) {
+        return new FileSaver(blob, name || blob.name || "download", no_auto_bom);
+    };
     // IE 10+ (native saveAs)
     if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob) {
         return function (blob, name, no_auto_bom) {
@@ -1686,8 +1659,7 @@ var saveAs = saveAs || (function (view) {
 // with an attribute `content` that corresponds to the window
 if (typeof module !== "undefined" && module.exports) {
     module.exports.saveAs = saveAs;
-}
-else if ((typeof define !== "undefined" && define !== null) && (define.amd !== null)) {
+} else if ((typeof define !== "undefined" && define !== null) && (define.amd !== null)) {
     define("FileSaver.js", function () {
         return saveAs;
     });
