@@ -115,7 +115,7 @@ function stopFunction() {
 //if last iteration is ended, all necessary values will be stored to the txt file
 function interruptGame() {
     document.getElementById("countdownTimer").style.display = 'block';
-    countDownDate = Date.now() + 114000;
+    countDownDate = Date.now() + 5000;
     //check, if score, scoretime, choice values are available
     if (counterToInterruption > 0) {
         //if it is the first time that values as stored in interrupt (basically it saves the coordinates of the first and last value of the game results until interruption, so it can be analysed in the text file)
