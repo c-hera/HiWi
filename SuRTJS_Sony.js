@@ -69,7 +69,7 @@ var subjectScoretimeExact = [];
 //defines, how many interruptions will happen during experiment. During last interruption, 
 //javascript will save the data, therefore a value of 3 means 2 interruptions within the
 //experiment and one interruption at the end for saving
-var endOfExperiment = 2;
+var endOfExperiment = 5;
 //checks, how many times the game has been interrupted so far
 var iterationsBeforeEnd = 0;
 //variable is set to 1, if interruption occure, to start new game in function nextGame()
@@ -95,9 +95,27 @@ var combinedResults = {
 , }
 var mistakecounter = 0;
 //interrupts game and shows countdown, countdown length can be set in function displayCountdown,
+var countDownDate = 0;
+//gets executed, when player hits the interrupt button. shows a 6 sec countdown, where the player can return to the game (error prevention, if interrupt button was pressed unintentionally)
+function interrupt() {
+    countDownDate = Date.now() + 6000;
+    document.getElementById("waitForCountdown").style.display = 'block';
+    document.getElementById("continue").style.display = 'block';
+    document.getElementById("continueParent").style.display = 'block';
+    displayCountdown(1);
+};
+//stops the 6 sec countdown. If player clicked the interrupt button unintentionally, this function will end the countdown and player will return to the game
+function stopFunction() {
+    clearInterval(x);
+    document.getElementById("waitForCountdown").style.display = 'none';
+    document.getElementById("continue").style.display = 'none';
+    document.getElementById("continueParent").style.display = 'none';
+}
+//second interruption (player cannot return to game anymore), coordinates of first and last game of this iteration are stored to .interrupt,
+//if last iteration is ended, all necessary values will be stored to the txt file
 function interruptGame() {
-    //show timer
     document.getElementById("countdownTimer").style.display = 'block';
+    countDownDate = Date.now() + 114000;
     //check, if score, scoretime, choice values are available
     if (counterToInterruption > 0) {
         //if it is the first time that values as stored in interrupt (basically it saves the coordinates of the first and last value of the game results until interruption, so it can be analysed in the text file)
@@ -119,6 +137,7 @@ function interruptGame() {
     }
     else {
         //get rid of the undefined x 1 entry at position 0 in arrays
+        clearInterval(x);
         var subjectChoiceNew = subjectChoice.slice(1, subjectChoice.length + 1);
         var subjectScoretimeNew = subjectScoretime.slice(1, subjectScore.length + 1);
         var subjectScoreNew = subjectScore.slice(1, subjectScore.length + 1);
@@ -140,12 +159,12 @@ function interruptGame() {
         all += "\n";
         all += "ScoretimeExact" + new Array(row_width).join('\t');
         all += "\n";
-        all += "timeToScore" + new Array(row_width).join('\t');
+        //all += "timeToScore" + new Array(row_width).join('\t');
+        //all += "\n";
+        all += "choice" + new Array(row_width).join('\t');
         all += "\n";
-        all += "choice" + new Array(row_width).join('\t\t');
-        all += "\n";
-        all += "score" + new Array(row_width).join('\t\t');
-        all += "\n";
+        // all += "score" + new Array(row_width).join('\t\t');
+        //all += "\n";
         all += "interruption" + new Array(row_width).join('\t');
         all += "\n";
         all += experimentDate + new Array(row_width).join('\t');
@@ -166,13 +185,12 @@ function interruptGame() {
             }
             all += testSubjectResult.resultsScoretimeExact[i] + new Array(row_width).join('\t\t');
             all += "\n";
-            all += testSubjectResult.resultsTime[i] + new Array(row_width).join('\t\t');
+            //all += testSubjectResult.resultsTime[i] + new Array(row_width).join('\t\t');
+            //all += "\n";
+            all += testSubjectResult.resultsChoice[i] + new Array(row_width).join('\t');
             all += "\n";
-            all += testSubjectResult.resultsChoice[i] + new Array(row_width).join('\t\t');
-            all += "\n";
-            all += testSubjectResult.resultsScore[i] + new Array(row_width).join('\t\t');
-            //content += myarray[i + 1];
-            all += "\n";
+            //all += testSubjectResult.resultsScore[i] + new Array(row_width).join('\t\t');
+            //all += "\n";
             if (typeof testSubjectResult.interrupt[i] != 'undefined') {
                 all += testSubjectResult.interrupt[i] + new Array(row_width).join('\t');
             }
@@ -184,87 +202,107 @@ function interruptGame() {
         //use saveAs to save data to txt/xls file
         var number = testSubjectResult.vpn.toString();
         saveAs(allData, "VPN" + number + "_results.txt")
-        document.getElementById("countdownTimer").innerHTML = "End of game. Please stow away the tablet.";
-        //UNCOMMENT HERE, IF DATA SHOULD BE STORED IN XLS FILE
-        /*
-        //fill object "combineResults" with values
-        var row_width = 2;
-        combinedResults.timeToScore = ["time"];
-        combinedResults.timeToScore += "\n";
-        for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
-            //add spacing between numbers
-            combinedResults.timeToScore += testSubjectResult.resultsTime[i] + new Array(row_width).join(" ");
+            //UNCOMMENT HERE, IF DATA SHOULD BE STORED IN XLS FILE
+            /*
+            //fill object "combineResults" with values
+            var row_width = 2;
+            combinedResults.timeToScore = ["time"];
             combinedResults.timeToScore += "\n";
-        };
+            for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
+                //add spacing between numbers
+                combinedResults.timeToScore += testSubjectResult.resultsTime[i] + new Array(row_width).join(" ");
+                combinedResults.timeToScore += "\n";
+            };
 
-        combinedResults.choice += ["choice"];
-        combinedResults.choice += "\n";
-        for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
-            combinedResults.choice += testSubjectResult.resultsChoice[i] + new Array(row_width).join(" ");
+            combinedResults.choice += ["choice"];
             combinedResults.choice += "\n";
-        };
+            for (var i = 0; i < testSubjectResult.resultsTime.length; i++) {
+                combinedResults.choice += testSubjectResult.resultsChoice[i] + new Array(row_width).join(" ");
+                combinedResults.choice += "\n";
+            };
 
-        combinedResults.score += ["score"];
-        combinedResults.score += "\n";
-        for (var i = 0; i < testSubjectResult.resultsChoice.length; i++) {
-            combinedResults.score += testSubjectResult.resultsScore[i] + new Array(row_width).join(" ");
+            combinedResults.score += ["score"];
             combinedResults.score += "\n";
-        };
+            for (var i = 0; i < testSubjectResult.resultsChoice.length; i++) {
+                combinedResults.score += testSubjectResult.resultsScore[i] + new Array(row_width).join(" ");
+                combinedResults.score += "\n";
+            };
 
-        combinedResults.timeProgression += ["time_progression"];
-        combinedResults.timeProgression += "\n";
-        for (var i = 0; i < testSubjectResult.resultsTimeProgression.length; i++) {
-            combinedResults.timeProgression += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join(" ");
+            combinedResults.timeProgression += ["time_progression"];
             combinedResults.timeProgression += "\n";
-        };
+            for (var i = 0; i < testSubjectResult.resultsTimeProgression.length; i++) {
+                combinedResults.timeProgression += testSubjectResult.resultsTimeProgression[i] + new Array(row_width).join(" ");
+                combinedResults.timeProgression += "\n";
+            };
 
-        combinedResults.interruptions += ["Interruptions (Row Information)"];
-        combinedResults.interruptions += "\n";
-        for (var i = 0; i < testSubjectResult.interrupt.length; i++) {
-            combinedResults.interruptions += testSubjectResult.interrupt[i] + new Array(row_width).join(" ");
+            combinedResults.interruptions += ["Interruptions (Row Information)"];
             combinedResults.interruptions += "\n";
-        };
+            for (var i = 0; i < testSubjectResult.interrupt.length; i++) {
+                combinedResults.interruptions += testSubjectResult.interrupt[i] + new Array(row_width).join(" ");
+                combinedResults.interruptions += "\n";
+            };
 
-        combinedResults.experimentStart += ["Experiment_Starttime"];
-        combinedResults.experimentStart += "\n";
-        combinedResults.experimentStart += experimentDate;
-        combinedResults.experimentStart += "\n";
+            combinedResults.experimentStart += ["Experiment_Starttime"];
+            combinedResults.experimentStart += "\n";
+            combinedResults.experimentStart += experimentDate;
+            combinedResults.experimentStart += "\n";
 
-        //save Data via "saveAs", unfortunately, values can only be stored in one column (if saved to excel)
+            //save Data via "saveAs", unfortunately, values can only be stored in one column (if saved to excel)
 
-        var allData = new Blob([combinedResults.experimentStart, combinedResults.timeProgression, combinedResults.timeToScore, combinedResults.score, combinedResults.choice, combinedResults.interruptions], {
-            type: "text/plain;charset=utf-8"
-        });
+            var allData = new Blob([combinedResults.experimentStart, combinedResults.timeProgression, combinedResults.timeToScore, combinedResults.score, combinedResults.choice, combinedResults.interruptions], {
+                type: "text/plain;charset=utf-8"
+            });
 
-        //use saveAs to save data to txt/xls file
-        var number = testSubjectResult.vpn.toString();
-        saveAs(allData, "VPN" + number + "_results.xls");*/
+            //use saveAs to save data to txt/xls file
+            var number = testSubjectResult.vpn.toString();
+            saveAs(allData, "VPN" + number + "_results.xls");*/
     }
 };
+var x = 0;
+var distance = 0;
 
-function displayCountdown() {
-    var date = new Date();
-    //SET COUNTDOWNTIME HERE, usually 2 minutes (120000)
-    var countDownDate = Date.now() + 5000;
-    var x = setInterval(function () {
-        // Get todays date and time
+function displayCountdown(firstIteration) {
+    x = setInterval(refreshCountdown2, 1000);
+
+    function refreshCountdown2() {
         var now = new Date().getTime();
         // Find the distance between now an the count down date
-        var distance = countDownDate - now;
+        distance = countDownDate - now;
+        //var countDownDate = Date.now() + 5000;
+        //var now = new Date().getTime();
+        // Find the distance between now an the count down date
+        //var distance = countDownDate - now;
         // Time calculations for days, hours, minutes and seconds
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("waitForCountdown").style.display = 'none';
+            document.getElementById("continue").style.display = 'none';
+            document.getElementById("continueParent").style.display = 'none';
+            document.getElementById("countdownTimer").style.display = 'none';
+            if (firstIteration == 1) {
+                firstIteration = 0;
+                interruptGame(1);
+            }
+            else {
+                game--;
+                ShowScore();
+            }
+            //game counter needs to be reduced, as last game was not played if interruption has been selected by the user
+        }
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
         // Display the result in the element with id="demo"
-        document.getElementById("countdownTimer").innerHTML = minutes + "m " + seconds + "s until game starts again.";
-        // If the count down is finished, write some text
-        if (distance < 0) {
-            clearInterval(x);
-            document.getElementById("countdownTimer").style.display = 'none';
-            //game counter needs to be reduced, as last game was not played if interruption has been selected by the user
-            game--;
-            ShowScore();
+        if (firstIteration == 1) {
+            document.getElementById("waitForCountdown").innerHTML = minutes + "m " + seconds + "s until game will be interrupted permanently.";
         }
-    }, 200);
+        else if (endOfExperiment == iterationsBeforeEnd) {
+            document.getElementById("countdownTimer").innerHTML = "<br><br><br><br><br><br><br><br>End of game.Please stow away the tablet.";
+        }
+        else {
+            document.getElementById("countdownTimer").innerHTML = "<br><br><br><br><br><br><br><br>" + minutes + "m " + seconds + "s until game starts again.";
+        }
+        // If the count down is finished, write some text
+    }
 };
 //Ausslesen der Bildschirmgroesse
 Screen();
@@ -1338,6 +1376,11 @@ function ShowScore() {
     var rightchoicepercent = 100 * rightchoice / game;
     var scorehandicap = Math.round(score / game);
     rightchoicepercent = Math.round(rightchoicepercent);
+    //ATTENTION: Quick workaround as program tends to display percentage greater than 100. Need to check again. For the time being this 
+    //method is used to not confuse the player.
+    if (rightchoicepercent > 100) {
+        rightchoicepercent = 100;
+    }
     document.getElementById('scoreanzeige').innerHTML = "<br><br><br><br><br><br><br><br>" + rightchoicepercent + "% of the time, you chose correctly. <br> Handicap: " + scorehandicap;
     score = 0;
     newround = 1;
