@@ -98,7 +98,7 @@ var mistakecounter = 0;
 var countDownDate = 0;
 //gets executed, when player hits the interrupt button. shows a 6 sec countdown, where the player can return to the game (error prevention, if interrupt button was pressed unintentionally)
 function interrupt() {
-    countDownDate = Date.now() + 6000;
+    countDownDate = Date.now() + 5000;
     document.getElementById("waitForCountdown").style.display = 'block';
     document.getElementById("continue").style.display = 'block';
     document.getElementById("continueParent").style.display = 'block';
@@ -842,6 +842,7 @@ function Target() {
 //
 //EndInput
 function EndInput() {
+    window.scrollTo(0, 1);
     var d = document.getElementById('Input');
     //get vpn number and store it to object
     var vpn = document.getElementById('vpnNumber').value;
