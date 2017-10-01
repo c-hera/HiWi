@@ -56,7 +56,8 @@ var testSubjectResult = {
     resultsScore: [],
     resultsTimeProgression: [],
     resultsScoretimeExact: [], //interrupt defines start and end of game sequence, confines the results
-    interrupt: []
+    interrupt: [],
+    timeToResume: [],
 };
 //counts games, is used to find out, how many games have been played since last interruption/game start
 var counterToInterruption = 0;
@@ -96,6 +97,12 @@ var combinedResults = {
 var mistakecounter = 0;
 //interrupts game and shows countdown, countdown length can be set in function displayCountdown,
 var countDownDate = 0;
+//is 1, if countdown has been activated. Shows different Score Screen afterwards.
+var newgame = 0;;
+var continueScreenStart = 0;
+var continueScreenEnd = 0;
+//interruption time needed to be preselected
+var interruptionIntervalls = [5000, 5000, 5000, 5000, 5000];
 //gets executed, when player hits the interrupt button. shows a 6 sec countdown, where the player can return to the game (error prevention, if interrupt button was pressed unintentionally)
 function interrupt() {
     countDownDate = Date.now() + 5000;
@@ -115,21 +122,27 @@ function stopFunction() {
 //if last iteration is ended, all necessary values will be stored to the txt file
 function interruptGame() {
     document.getElementById("countdownTimer").style.display = 'block';
-    countDownDate = Date.now() + 115000;
+
     //check, if score, scoretime, choice values are available
     if (counterToInterruption > 0) {
         //if it is the first time that values as stored in interrupt (basically it saves the coordinates of the first and last value of the game results until interruption, so it can be analysed in the text file)
         if (testSubjectResult.interrupt == 0) {
             testSubjectResult.interrupt[0] = 1;
             testSubjectResult.interrupt[1] = counterToInterruption;
+            //interruptionIntervalls.reverse();
         } else {
             //if it is the second, etc. time that values as stored in interrupt
             var lastInterruptValue = testSubjectResult.interrupt[testSubjectResult.interrupt.length - 1];
             testSubjectResult.interrupt.push(lastInterruptValue + 1);
             testSubjectResult.interrupt.push(counterToInterruption);
         }
-        iterationsBeforeEnd++;
+
     }
+
+    countDownDate = Date.now() + interruptionIntervalls[iterationsBeforeEnd];
+    iterationsBeforeEnd++;
+    //var random = Math.floor(Math.random() * 180000) + 120000;
+    //countDownDate = Date.now() + random;
     //check if all iterations have been played by the user (defined by interruptions within the experiment design)
     if (iterationsBeforeEnd < endOfExperiment) {
         displayCountdown();
@@ -165,6 +178,8 @@ function interruptGame() {
         //all += "\n";
         all += "interruption" + new Array(row_width).join('\t');
         all += "\n";
+        all += "reaction time" + new Array(row_width).join('\t');
+        all += "\n";
         all += experimentDate + new Array(row_width).join('\t');
         all += "\n";
         all += testSubjectResult.vpn + new Array(row_width).join('\t');
@@ -189,8 +204,12 @@ function interruptGame() {
             //all += testSubjectResult.resultsScore[i] + new Array(row_width).join('\t\t');
             //all += "\n";
             if (typeof testSubjectResult.interrupt[i] != 'undefined') {
-                all += testSubjectResult.interrupt[i] + new Array(row_width).join('\t');
-            }
+                all += testSubjectResult.interrupt[i] + new Array(row_width).join('\t\t');
+            };
+            all += "\n";
+            if (typeof testSubjectResult.timeToResume[i] != 'undefined') {
+                all += testSubjectResult.timeToResume[i] + new Array(row_width).join('\t');
+            };
             all += "\r\n";
         }
         var allData = new Blob([all /*combinedResults.timeToScore, combinedResults.choice*/ ], {
@@ -276,6 +295,9 @@ function displayCountdown(firstIteration) {
             document.getElementById("continue").style.display = 'none';
             document.getElementById("continueParent").style.display = 'none';
             document.getElementById("countdownTimer").style.display = 'none';
+            newgame = 1;
+
+
             if (firstIteration == 1) {
                 firstIteration = 0;
                 interruptGame(1);
@@ -283,21 +305,23 @@ function displayCountdown(firstIteration) {
                 game--;
                 //startNextGame = 1;
                 //NextGame();
+
                 ShowScore();
             }
             //game counter needs to be reduced, as last game was not played if interruption has been selected by the user
-        }
-        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        // Display the result in the element with id="demo"
-        if (firstIteration == 1) {
-            document.getElementById("waitForCountdown").innerHTML = minutes + "m " + seconds + "s until game will be interrupted permanently.";
-        } else if (endOfExperiment == iterationsBeforeEnd) {
-            document.getElementById("countdownTimer").innerHTML = "<br><br><br><br><br><br><br><br>End of game.Please stow away the tablet.";
         } else {
-            document.getElementById("countdownTimer").innerHTML = "<br><br><br><br><br><br><br><br>" + minutes + "m " + seconds + "s until game starts again.";
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // Display the result in the element with id="demo"
+            if (firstIteration == 1) {
+                document.getElementById("waitForCountdown").innerHTML = minutes + "m " + seconds + "s until game will be interrupted permanently.";
+            } else if (endOfExperiment == iterationsBeforeEnd) {
+                document.getElementById("countdownTimer").innerHTML = "<br><br><br><br><br><br><br><br>End of game.Please stow away the tablet.";
+            } else {
+                document.getElementById("countdownTimer").innerHTML = "";
+            }
+            // If the count down is finished, write some text
         }
-        // If the count down is finished, write some text
     }
 };
 //Ausslesen der Bildschirmgroesse
@@ -306,6 +330,13 @@ Screen();
 //GoON
 function GoOn() {
     //Pruefen, ob neue Runde gestartet werden soll
+    if (continueScreenStart > 0) {
+        var now = new Date().getTime();
+        var continueScreenResult = (now - continueScreenStart) / 1000;
+        console.log(continueScreenResult);
+        testSubjectResult.timeToResume.push(continueScreenResult);
+        continueScreenStart = 0;
+    };
     if (weiter) {
         //Seite bestimmen
         Seitebestimmen();
@@ -485,9 +516,12 @@ function Score() {
         scoreheightOld = scoreheight;
     } else {
         scoreheight = 80 - ((lastfivescore / t) + 1) * 10;
+        console.log(scoreheight);
         if (scoreheight <= scoreheightOld && scoreheight < 80) {
-            scoreheight = scoreheightOld;
-            scoreheightOld += 5;
+            if (scoreheightOld <= 75) {
+                scoreheight = scoreheightOld;
+                scoreheightOld += 5;
+            }
         }
     }
     //Setze Hoehe des Scorebalkens
@@ -830,7 +864,6 @@ function Target() {
 //
 //EndInput
 function EndInput() {
-    window.scrollTo(0, 1);
     var d = document.getElementById('Input');
     //get vpn number and store it to object
     var vpn = document.getElementById('vpnNumber').value;
@@ -1361,8 +1394,6 @@ function ShowScore() {
     d.style.zIndex = 1;
     var d = document.getElementById('scoreanzeige');
     d.style.zIndex = 30;
-    console.log(rightchoice);
-    console.log(game);
     var rightchoicepercent = 100 * rightchoice / game;
     var scorehandicap = Math.round(score / game);
     rightchoicepercent = Math.round(rightchoicepercent);
@@ -1371,7 +1402,15 @@ function ShowScore() {
     if (rightchoicepercent > 100) {
         rightchoicepercent = 100;
     }
-    document.getElementById('scoreanzeige').innerHTML = "<br><br><br><br><br><br><br><br>" + rightchoicepercent + "% of the time, you chose correctly. <br> Handicap: " + scorehandicap;
+
+    if (newgame == 1) {
+        newgame = 0;
+        continueScreenStart = Date.now();
+        document.getElementById('scoreanzeige').innerHTML = "<br><br><br>Please continue to play.<br><br><br>" + rightchoicepercent + "% of the time, you chose correctly. <br> Handicap: " + scorehandicap;
+        document.getElementById('scoreanzeige').style.fontSize = "40px";
+    } else {
+        document.getElementById('scoreanzeige').innerHTML = "<br><br><br><br><br><br>" + rightchoicepercent + "% of the time, you chose correctly. <br> Handicap: " + scorehandicap;
+    };
     game = 1;
     score = 0;
     newround = 1;
@@ -1409,7 +1448,6 @@ function NextGame() {
         subjectScore[counterToInterruption] = score;
         subjectTime[counterToInterruption] = timeExact;
         subjectScoretimeExact[counterToInterruption] = scoretimeExact;
-
     } else {
         weiter = true;
         game++;
